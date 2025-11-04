@@ -329,19 +329,28 @@ class TrainerCore:
                 ax.axis('off')
 
         axes[1, 0].set_title('Prediction: Terrain')
-        axes[1, 0].imshow(terrain_pred.T, origin='lower', cmap='jet', vmin=-1.0, vmax=1.0)
+        im_terrain_pred = axes[1, 0].imshow(
+            terrain_pred.T, origin='lower', cmap='jet', vmin=-1.0, vmax=1.0
+        )
         axes[1, 0].scatter(Xs_pred_grid[:, 0], Xs_pred_grid[:, 1], c='r', s=1)
         axes[1, 0].scatter(Xs_grid[:, 0], Xs_grid[:, 1], c='k', s=1)
+        fig.colorbar(im_terrain_pred, ax=axes[1, 0], fraction=0.046, pad=0.04)
 
         axes[1, 1].set_title('Label: Terrain')
-        axes[1, 1].imshow(hm_terrain[0].T, origin='lower', cmap='jet', vmin=-1.0, vmax=1.0)
+        im_terrain_label = axes[1, 1].imshow(
+            hm_terrain[0].T, origin='lower', cmap='jet', vmin=-1.0, vmax=1.0
+        )
         axes[1, 1].scatter(Xs_pred_grid[:, 0], Xs_pred_grid[:, 1], c='r', s=1)
         axes[1, 1].scatter(Xs_grid[:, 0], Xs_grid[:, 1], c='k', s=1)
+        fig.colorbar(im_terrain_label, ax=axes[1, 1], fraction=0.046, pad=0.04)
 
         axes[1, 2].set_title('Friction')
-        axes[1, 2].imshow(friction_pred.T, origin='lower', cmap='jet', vmin=0.0, vmax=1.0)
+        im_friction = axes[1, 2].imshow(
+            friction_pred.T, origin='lower', cmap='jet', vmin=0.0, vmax=1.0
+        )
         axes[1, 2].scatter(Xs_pred_grid[:, 0], Xs_pred_grid[:, 1], c='r', s=1)
         axes[1, 2].scatter(Xs_grid[:, 0], Xs_grid[:, 1], c='k', s=1)
+        fig.colorbar(im_friction, ax=axes[1, 2], fraction=0.046, pad=0.04)
 
         axes[1, 3].set_title('Trajectories XY')
         axes[1, 3].plot(xs[:, 0], xs[:, 1], c='k', label='GT')
@@ -354,19 +363,28 @@ class TrainerCore:
         axes[1, 3].legend()
 
         axes[2, 0].set_title('Prediction: Geom')
-        axes[2, 0].imshow(geom_pred.T, origin='lower', cmap='jet', vmin=-1.0, vmax=1.0)
+        im_geom_pred = axes[2, 0].imshow(
+            geom_pred.T, origin='lower', cmap='jet', vmin=-1.0, vmax=1.0
+        )
         axes[2, 0].scatter(Xs_pred_grid[:, 0], Xs_pred_grid[:, 1], c='r', s=5)
         axes[2, 0].scatter(Xs_grid[:, 0], Xs_grid[:, 1], c='k', s=1)
+        fig.colorbar(im_geom_pred, ax=axes[2, 0], fraction=0.046, pad=0.04)
 
         axes[2, 1].set_title('Label: Geom')
-        axes[2, 1].imshow(hm_geom[0].T, origin='lower', cmap='jet', vmin=-1.0, vmax=1.0)
+        im_geom_label = axes[2, 1].imshow(
+            hm_geom[0].T, origin='lower', cmap='jet', vmin=-1.0, vmax=1.0
+        )
         axes[2, 1].scatter(Xs_pred_grid[:, 0], Xs_pred_grid[:, 1], c='r', s=5)
         axes[2, 1].scatter(Xs_grid[:, 0], Xs_grid[:, 1], c='k' , s=1)
+        fig.colorbar(im_geom_label, ax=axes[2, 1], fraction=0.046, pad=0.04)
 
         axes[2, 2].set_title('Height diff')
-        axes[2, 2].imshow(diff_pred.T, origin='lower', cmap='jet', vmin=0.0, vmax=1.0)
+        im_diff = axes[2, 2].imshow(
+            diff_pred.T, origin='lower', cmap='jet', vmin=0.0, vmax=1.0
+        )
         axes[2, 2].scatter(Xs_pred_grid[:, 0], Xs_pred_grid[:, 1], c='r', s=5)
         axes[2, 2].scatter(Xs_grid[:, 0], Xs_grid[:, 1], c='k' , s=1)
+        fig.colorbar(im_diff, ax=axes[2, 2], fraction=0.046, pad=0.04)
 
         axes[2, 3].set_title('Trajectories Z')
         axes[2, 3].plot(traj_ts, xs[:, 2], 'k', label='GT')
