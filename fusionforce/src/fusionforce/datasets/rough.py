@@ -22,30 +22,30 @@ import open3d as o3d
 pkg_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 data_dir = os.path.realpath(os.path.join(pkg_dir, 'data'))
 
-rough_seq_paths = [
-        # MARV robot
-        os.path.join(data_dir, 'ROUGH/24-08-14-monoforce-long_drive'),
-        os.path.join(data_dir, 'ROUGH/marv_2024-09-26-13-46-51'),
-        os.path.join(data_dir, 'ROUGH/marv_2024-09-26-13-54-43'),
-        os.path.join(data_dir, 'ROUGH/marv_2024-10-31-15-16-42'),
-        os.path.join(data_dir, 'ROUGH/marv_2024-10-31-15-26-47'),
-        os.path.join(data_dir, 'ROUGH/marv_2024-10-31-15-35-05'),
-        os.path.join(data_dir, 'ROUGH/marv_2024-10-31-15-52-07'),
-        os.path.join(data_dir, 'ROUGH/marv_2024-10-31-15-56-33'),
-        # TRADR robot
-        os.path.join(data_dir, 'ROUGH/ugv_2024-09-10-17-02-31'),
-        os.path.join(data_dir, 'ROUGH/ugv_2024-09-10-17-12-12'),
-        os.path.join(data_dir, 'ROUGH/ugv_2024-09-26-13-54-18'),
-        os.path.join(data_dir, 'ROUGH/ugv_2024-09-26-13-58-46'),
-        os.path.join(data_dir, 'ROUGH/ugv_2024-09-26-14-03-57'),
-        os.path.join(data_dir, 'ROUGH/ugv_2024-09-26-14-14-42'),
-        os.path.join(data_dir, 'ROUGH/ugv_2024-10-05-15-40-41'),
-        os.path.join(data_dir, 'ROUGH/ugv_2024-10-05-15-48-31'),
-        os.path.join(data_dir, 'ROUGH/ugv_2024-10-05-15-58-52'),
-        os.path.join(data_dir, 'ROUGH/ugv_2024-10-05-16-08-30'),
-        os.path.join(data_dir, 'ROUGH/ugv_2024-10-05-16-24-48'),
-]
-
+# rough_seq_paths = [
+#         # MARV robot
+#         os.path.join(data_dir, 'ROUGH/24-08-14-monoforce-long_drive'),
+#         os.path.join(data_dir, 'ROUGH/marv_2024-09-26-13-46-51'),
+#         os.path.join(data_dir, 'ROUGH/marv_2024-09-26-13-54-43'),
+#         os.path.join(data_dir, 'ROUGH/marv_2024-10-31-15-16-42'),
+#         os.path.join(data_dir, 'ROUGH/marv_2024-10-31-15-26-47'),
+#         os.path.join(data_dir, 'ROUGH/marv_2024-10-31-15-35-05'),
+#         os.path.join(data_dir, 'ROUGH/marv_2024-10-31-15-52-07'),
+#         os.path.join(data_dir, 'ROUGH/marv_2024-10-31-15-56-33'),
+#         # TRADR robot
+#         os.path.join(data_dir, 'ROUGH/ugv_2024-09-10-17-02-31'),
+#         os.path.join(data_dir, 'ROUGH/ugv_2024-09-10-17-12-12'),
+#         os.path.join(data_dir, 'ROUGH/ugv_2024-09-26-13-54-18'),
+#         os.path.join(data_dir, 'ROUGH/ugv_2024-09-26-13-58-46'),
+#         os.path.join(data_dir, 'ROUGH/ugv_2024-09-26-14-03-57'),
+#         os.path.join(data_dir, 'ROUGH/ugv_2024-09-26-14-14-42'),
+#         os.path.join(data_dir, 'ROUGH/ugv_2024-10-05-15-40-41'),
+#         os.path.join(data_dir, 'ROUGH/ugv_2024-10-05-15-48-31'),
+#         os.path.join(data_dir, 'ROUGH/ugv_2024-10-05-15-58-52'),
+#         os.path.join(data_dir, 'ROUGH/ugv_2024-10-05-16-08-30'),
+#         os.path.join(data_dir, 'ROUGH/ugv_2024-10-05-16-24-48'),
+# ]
+rough_seq_paths = [os.path.join(data_dir, 'ROUGH/marv_2024-09-26-13-46-51')]
 
 class ROUGH(Dataset):
     """
@@ -100,6 +100,7 @@ class ROUGH(Dataset):
     def get_ids(self):
         ids = [f[:-4] for f in os.listdir(self.cloud_path)]
         ids = sorted(ids)
+        ids.remove('1727351210_69369')
         return ids
 
     @staticmethod
