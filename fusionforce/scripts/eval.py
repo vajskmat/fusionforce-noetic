@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-sys.path.append('../src/')
+sys.path.append('../')
 from tqdm import tqdm
 from time import time
 import matplotlib.pyplot as plt
@@ -11,17 +11,17 @@ import torch
 from torch.utils.data import DataLoader
 from scipy.spatial.transform import Rotation
 import argparse
-from fusionforce.models.traj_predictor.dphys_config import DPhysConfig
-from fusionforce.models.traj_predictor.dphysics import DPhysics
-from fusionforce.models.terrain_encoder.lss import LiftSplatShoot
-from fusionforce.models.terrain_encoder.voxelnet import VoxelNet
-from fusionforce.models.terrain_encoder.pointpillars import PointPillars
-from fusionforce.models.terrain_encoder.bevfusion import BEVFusion
-from fusionforce.models.terrain_encoder.fusionnet import BEVFusion2
-from fusionforce.models.terrain_encoder.utils import ego_to_cam, get_only_in_img_mask, denormalize_img
-from fusionforce.utils import read_yaml, write_to_csv, append_to_csv, compile_data, str2bool
-from fusionforce.losses import physics_loss, hm_loss
-from fusionforce.datasets import FusionROUGH
+from src.fusionforce.models.traj_predictor.dphys_config import DPhysConfig
+from src.fusionforce.models.traj_predictor.dphysics import DPhysics
+from src.fusionforce.models.terrain_encoder.lss import LiftSplatShoot
+from src.fusionforce.models.terrain_encoder.voxelnet import VoxelNet
+from src.fusionforce.models.terrain_encoder.pointpillars import PointPillars
+from src.fusionforce.models.terrain_encoder.bevfusion import BEVFusion
+from src.fusionforce.models.terrain_encoder.bevfusion2 import BEVFusion2
+from src.fusionforce.models.terrain_encoder.utils import ego_to_cam, get_only_in_img_mask, denormalize_img
+from src.fusionforce.utils import read_yaml, write_to_csv, append_to_csv, compile_data, str2bool
+from src.fusionforce.losses import physics_loss, hm_loss
+from src.fusionforce.datasets import FusionROUGH
 
 
 def arg_parser():

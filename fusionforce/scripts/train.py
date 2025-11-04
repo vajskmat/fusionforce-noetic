@@ -1,22 +1,22 @@
 #!/usr/bin/env python
 
 import sys
-sys.path.append('../src')
+sys.path.append('../')
 import os
 import torch
 import numpy as np
 from torch.utils.data import DataLoader
-from fusionforce.models.terrain_encoder.utils import denormalize_img, ego_to_cam, get_only_in_img_mask
-from fusionforce.models.terrain_encoder.lss import LiftSplatShoot
-from fusionforce.models.terrain_encoder.voxelnet import VoxelNet
-from fusionforce.models.terrain_encoder.pointpillars import PointPillars
-from fusionforce.models.terrain_encoder.bevfusion import BEVFusion
-from fusionforce.models.terrain_encoder.bevfusion2 import BEVFusion2
-from fusionforce.models.traj_predictor.dphysics import DPhysics
-from fusionforce.models.traj_predictor.dphys_config import DPhysConfig
-from fusionforce.datasets.rough import ROUGH, PointsROUGH, FusionROUGH
-from fusionforce.utils import read_yaml, write_to_yaml, str2bool, compile_data
-from fusionforce.losses import hm_loss, physics_loss
+from src.fusionforce.models.terrain_encoder.utils import denormalize_img, ego_to_cam, get_only_in_img_mask
+from src.fusionforce.models.terrain_encoder.lss import LiftSplatShoot
+from src.fusionforce.models.terrain_encoder.voxelnet import VoxelNet
+from src.fusionforce.models.terrain_encoder.pointpillars import PointPillars
+from src.fusionforce.models.terrain_encoder.bevfusion import BEVFusion
+from src.fusionforce.models.terrain_encoder.bevfusion2 import BEVFusion2
+from src.fusionforce.models.traj_predictor.dphysics import DPhysics
+from src.fusionforce.models.traj_predictor.dphys_config import DPhysConfig
+from src.fusionforce.datasets.rough import ROUGH, PointsROUGH, FusionROUGH
+from src.fusionforce.utils import read_yaml, write_to_yaml, str2bool, compile_data
+from src.fusionforce.losses import hm_loss, physics_loss
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
@@ -155,6 +155,7 @@ class TrainerCore:
 
             if torch.isnan(loss):
                 torch.save(self.terrain_encoder.state_dict(), os.path.join(self.log_dir, 'train.pth'))
+                print('Losses: ', losses)
                 raise ValueError('Loss is NaN')
 
             if train:

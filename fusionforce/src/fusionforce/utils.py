@@ -123,7 +123,7 @@ def load_calib(calib_path):
 
 def compile_data(val_fraction=0.1, small_data=False, vis=False, Data=None, dphys_cfg=None, lss_cfg=None):
     from torch.utils.data import ConcatDataset, Subset
-    from fusionforce.datasets import ROUGH, rough_seq_paths
+    from src.fusionforce.datasets import ROUGH, rough_seq_paths
     """
     Compile datasets for LSS model training
 
