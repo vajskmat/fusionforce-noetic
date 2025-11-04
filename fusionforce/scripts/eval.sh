@@ -4,7 +4,7 @@ echo "Source ROS workspace..."
 
 SEQ=val
 BATCH_SIZE=1
-TERRAIN_ENCODERS=(lss voxelnet bevfusion)
+TERRAIN_ENCODERS=(lss voxelnet pointpillars bevfusion bevfusion2)
 TRAJ_PREDICTORS=(dphysics)
 VIS=True
 

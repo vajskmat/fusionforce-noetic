@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MODEL=bevfusion  # lss, voxelnet, bevfusion
+MODEL=bevfusion  # lss, voxelnet, pointpillars, bevfusion, bevfusion2
 ROBOT=marv
 DEBUG=False
 VIS=False
@@ -13,4 +13,4 @@ WEIGHTS=$HOME/workspaces/ros1/traversability_ws/src/fusionforce/fusionforce/conf
            --traj_sim_time 5.0 \
            --robot $ROBOT \
            --model $MODEL \
-           --pretrained_model_path ${WEIGHTS}
+           #--pretrained_model_path ${WEIGHTS}

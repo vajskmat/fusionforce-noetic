@@ -15,7 +15,9 @@ from fusionforce.models.traj_predictor.dphys_config import DPhysConfig
 from fusionforce.models.traj_predictor.dphysics import DPhysics
 from fusionforce.models.terrain_encoder.lss import LiftSplatShoot
 from fusionforce.models.terrain_encoder.voxelnet import VoxelNet
+from fusionforce.models.terrain_encoder.pointpillars import PointPillars
 from fusionforce.models.terrain_encoder.bevfusion import BEVFusion
+from fusionforce.models.terrain_encoder.fusionnet import BEVFusion2
 from fusionforce.models.terrain_encoder.utils import ego_to_cam, get_only_in_img_mask, denormalize_img
 from fusionforce.utils import read_yaml, write_to_csv, append_to_csv, compile_data, str2bool
 from fusionforce.losses import physics_loss, hm_loss
@@ -64,11 +66,16 @@ class Eval:
                                              self.lss_cfg['data_aug_conf']).from_pretrained(weights)
         elif model == 'voxelnet':
             terrain_encoder = VoxelNet(self.lss_cfg['grid_conf']).from_pretrained(weights)
+        elif model == 'pointpillars':
+            terrain_encoder = PointPillars(self.lss_cfg['grid_conf']).from_pretrained(weights)   
         elif model == 'bevfusion':
             terrain_encoder = BEVFusion(self.lss_cfg['grid_conf'],
                                         self.lss_cfg['data_aug_conf']).from_pretrained(weights)
+        elif model == 'bevfusion2':
+            terrain_encoder = BEVFusion2(self.lss_cfg['grid_conf'],
+                                        self.lss_cfg['data_aug_conf']).from_pretrained(weights)
         else:
-            raise ValueError(f'Invalid terrain encoder model: {model}. Supported: lss, voxelnet, bevfusion')
+            raise ValueError(f'Invalid terrain encoder model: {model}. Supported: lss, voxelnet, pointpillars, bevfusion, bevfusion2')
         terrain_encoder.to(self.device)
         terrain_encoder.eval()
         return terrain_encoder
@@ -82,7 +89,15 @@ class Eval:
         elif model == 'VoxelNet':
             cloud_input = batch[-1]
             terrain = self.terrain_encoder(cloud_input)
+        elif model == 'PointPillars':
+            cloud_input = batch[-1]
+            terrain = self.terrain_encoder(cloud_input)
         elif model == 'BEVFusion':
+            imgs, rots, trans, intrins, post_rots, post_trans = batch[:6]
+            img_inputs = (imgs, rots, trans, intrins, post_rots, post_trans)
+            cloud_input = batch[-1]
+            terrain = self.terrain_encoder(img_inputs, cloud_input)
+        elif model == 'BEVFusion2':
             imgs, rots, trans, intrins, post_rots, post_trans = batch[:6]
             img_inputs = (imgs, rots, trans, intrins, post_rots, post_trans)
             cloud_input = batch[-1]
