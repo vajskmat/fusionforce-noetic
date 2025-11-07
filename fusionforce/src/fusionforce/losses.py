@@ -64,7 +64,7 @@ def total_variation(heightmap):
     return tv
 
 
-def hm_loss(height_pred, height_gt, weights=None, h_max=None):
+def hm_loss(height_pred, height_gt, weights=None, h_max=1):
     assert height_pred.shape == height_gt.shape, 'Height prediction and ground truth must have the same shape'
     if weights is None:
         weights = torch.ones_like(height_gt)
@@ -74,6 +74,7 @@ def hm_loss(height_pred, height_gt, weights=None, h_max=None):
         # limit heightmap values to the physical limits: [-h_max, h_max]
         limit_fn = lambda x: h_max * torch.tanh(x)
         height_pred = limit_fn(height_pred)
+        height_gt = limit_fn(height_gt)
 
     # remove nan values if any
     mask_valid = ~(torch.isnan(height_pred) | torch.isnan(height_gt))
@@ -88,6 +89,38 @@ def hm_loss(height_pred, height_gt, weights=None, h_max=None):
 
     return loss
 
+def diff_loss(diff_pred, geom_gt, terrain_gt, geom_weights=None, h_max=1.0):
+    assert diff_pred.shape == geom_gt.shape == terrain_gt.shape == geom_weights.shape, 'All inputs must have the same shape'
+    if geom_weights is None:
+        geom_weights = torch.ones_like(geom_gt)
+    assert geom_weights.shape == geom_gt.shape, 'Weights and geometry ground truth must have the same shape'
+
+    if h_max is not None:
+        # limit heightmap values to the physical limits: [-h_max, h_max]
+        limit_fn = lambda x: h_max * torch.tanh(x)
+        geom_gt = limit_fn(geom_gt)
+        terrain_gt = limit_fn(terrain_gt)
+
+    # remove nan values if any
+    mask_valid = ~(torch.isnan(diff_pred) | torch.isnan(geom_gt))
+    geom_gt = geom_gt[mask_valid]
+    terrain_gt = terrain_gt[mask_valid]
+    geom_weights = geom_weights[mask_valid]
+    diff_pred = diff_pred[mask_valid]
+
+    # replace nan in terrain_gt with zeros as they represent removed areas in geom_gt
+    terrain_gt[torch.isnan(terrain_gt)] = 0.0
+
+    # compute difference ground truth
+    diff_gt = geom_gt - terrain_gt
+    diff_gt = diff_gt.clamp(min=0.0)
+
+    # compute weighted loss
+    pred = diff_pred * geom_weights
+    gt = diff_gt * geom_weights
+    loss = ((pred - gt) ** 2).mean()
+
+    return loss
 
 def physics_loss(states_pred, states_gt, pred_ts, gt_ts, gamma=0.9, rotation_loss=False):
     """

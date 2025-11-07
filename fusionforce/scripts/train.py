@@ -16,7 +16,7 @@ from src.fusionforce.models.traj_predictor.dphysics import DPhysics
 from src.fusionforce.models.traj_predictor.dphys_config import DPhysConfig
 from src.fusionforce.datasets.rough import ROUGH, PointsROUGH, FusionROUGH
 from src.fusionforce.utils import read_yaml, write_to_yaml, str2bool, compile_data
-from src.fusionforce.losses import hm_loss, physics_loss
+from src.fusionforce.losses import hm_loss, diff_loss, physics_loss
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
@@ -151,11 +151,14 @@ class TrainerCore:
             losses = self.compute_losses(batch)
             loss = (self.geom_weight * losses['geom'] +
                     self.terrain_weight * losses['terrain'] +
-                    self.phys_weight * losses['phys'])
+                    self.phys_weight * losses['phys'] +
+                    0.5 * losses['diff'])
 
             if torch.isnan(loss):
                 torch.save(self.terrain_encoder.state_dict(), os.path.join(self.log_dir, 'train.pth'))
                 print('Losses: ', losses)
+                for k, v in losses.items():
+                    print(f'{k} loss:', v.item())
                 raise ValueError('Loss is NaN')
 
             if train:
@@ -167,7 +170,7 @@ class TrainerCore:
                 if k not in epoch_losses:
                     epoch_losses[k] = 0.0
                 epoch_losses[k] += v.item()
-            epoch_losses['total'] += (losses['geom'] + losses['terrain'] + losses['phys']).item()
+            epoch_losses['total'] += (losses['geom'] + losses['terrain'] + losses['phys'] + losses['diff']).item()
 
             counter += 1
             for k, v in losses.items():
@@ -248,6 +251,10 @@ class TrainerCore:
         sample_i = np.random.choice(len(loader.dataset))
         sample = loader.dataset[sample_i]
 
+        # enables to load images even for pointcloud based models (PP, VoxelNet)
+        if self.model in ['voxelnet', 'pointpillars']:
+            imgs, rots, trans, intrins, post_rots, post_trans = loader.dataset.datasets[0].get_images_data(sample_i)
+
         if self.model == 'lss':
             (imgs, rots, trans, intrins, post_rots, post_trans,
              hm_geom, hm_terrain,
@@ -302,7 +309,7 @@ class TrainerCore:
         hm_points = torch.stack([x_grid, y_grid, z_grid], dim=-1)
         hm_points = hm_points.view(-1, 3).T
 
-        if self.model in ['lss', 'bevfusion']:
+        if self.model in ['lss', 'pointpillars', 'voxelnet', 'bevfusion', 'bevfusion2']:
             # plot images with projected height map points
             img_H, img_W = self.lss_cfg['data_aug_conf']['H'], self.lss_cfg['data_aug_conf']['W']
             for imgi in range(len(imgs))[:4]:
@@ -439,6 +446,13 @@ class TrainerLSS(TrainerCore):
         else:
             loss_terrain = torch.tensor(0.0, device=self.device)
 
+        # diff loss
+        if self.terrain_weight > 0:
+            loss_diff = diff_loss(terrain['diff'], hm_geom[:, 0:1], hm_terrain[:, 0:1], hm_geom[:, 1:2])
+            loss_diff += 0.02 * self.laplacian_loss(terrain['diff'])
+        else:
+            loss_diff = torch.tensor(0.0, device=self.device)
+
         # physics loss: difference between predicted and ground truth states
         if self.phys_weight > 0:
             # predict trajectory
@@ -453,7 +467,8 @@ class TrainerLSS(TrainerCore):
         losses = {
             'geom': loss_geom,
             'terrain': loss_terrain,
-            'phys': loss_phys
+            'phys': loss_phys,
+            'diff': loss_diff
         }
         return losses
 
@@ -513,6 +528,13 @@ class TrainerVoxelNet(TrainerCore):
             else:
                 loss_terrain = torch.tensor(0.0, device=self.device)
 
+            # diff loss
+            if self.terrain_weight > 0:
+                loss_diff = diff_loss(terrain['diff'], hm_geom[:, 0:1], hm_terrain[:, 0:1], hm_geom[:, 1:2])
+                loss_diff += 0.02 * self.laplacian_loss(terrain['diff'])
+            else:
+                loss_diff = torch.tensor(0.0, device=self.device)
+
             # physics loss: difference between predicted and ground truth states
             states_gt = [xs, xds, Rs, omegas]
             states_pred = self.predicts_states(terrain, pose0, controls)
@@ -526,7 +548,8 @@ class TrainerVoxelNet(TrainerCore):
             losses = {
                 'geom': loss_geom,
                 'terrain': loss_terrain,
-                'phys': loss_phys
+                'phys': loss_phys,
+                'diff': loss_diff
             }
             return losses
 
@@ -584,6 +607,13 @@ class TrainerPointPillars(TrainerCore):
             else:
                 loss_terrain = torch.tensor(0.0, device=self.device)
 
+            # diff loss
+            if self.terrain_weight > 0:
+                loss_diff = diff_loss(terrain['diff'], hm_geom[:, 0:1], hm_terrain[:, 0:1], hm_geom[:, 1:2])
+                loss_diff += 0.02 * self.laplacian_loss(terrain['diff'])
+            else:
+                loss_diff = torch.tensor(0.0, device=self.device)
+            
             # physics loss: difference between predicted and ground truth states
             states_gt = [xs, xds, Rs, omegas]
             states_pred = self.predicts_states(terrain, pose0, controls)
@@ -597,7 +627,8 @@ class TrainerPointPillars(TrainerCore):
             losses = {
                 'geom': loss_geom,
                 'terrain': loss_terrain,
-                'phys': loss_phys
+                'phys': loss_phys,
+                'diff': loss_diff
             }
             return losses
 
@@ -660,6 +691,13 @@ class TrainerBEVFusion(TrainerCore):
         else:
             loss_terrain = torch.tensor(0.0, device=self.device)
 
+        # diff loss
+        if self.terrain_weight > 0:
+            loss_diff = diff_loss(terrain['diff'], hm_geom[:, 0:1], hm_terrain[:, 0:1], hm_geom[:, 1:2])
+            loss_diff += 0.02 * self.laplacian_loss(terrain['diff'])
+        else:
+            loss_diff = torch.tensor(0.0, device=self.device)
+
         # physics loss: difference between predicted and ground truth states
         states_gt = [xs, xds, Rs, omegas]
         states_pred = self.predicts_states(terrain, pose0, controls)
@@ -673,7 +711,8 @@ class TrainerBEVFusion(TrainerCore):
         losses = {
             'geom': loss_geom,
             'terrain': loss_terrain,
-            'phys': loss_phys
+            'phys': loss_phys,
+            'diff': loss_diff
         }
         return losses
 
@@ -737,6 +776,12 @@ class TrainerBEVFusion2(TrainerCore):
             loss_terrain += 0.02 * self.laplacian_loss(terrain['terrain'])
         else:
             loss_terrain = torch.tensor(0.0, device=self.device)
+        # diff loss
+        if self.terrain_weight > 0:
+            loss_diff = diff_loss(terrain['diff'], hm_geom[:, 0:1], hm_terrain[:, 0:1], hm_geom[:, 1:2])
+            loss_diff += 0.02 * self.laplacian_loss(terrain['diff'])
+        else:
+            loss_diff = torch.tensor(0.0, device=self.device)
 
         # physics loss: difference between predicted and ground truth states
         states_gt = [xs, xds, Rs, omegas]
@@ -751,7 +796,8 @@ class TrainerBEVFusion2(TrainerCore):
         losses = {
             'geom': loss_geom,
             'terrain': loss_terrain,
-            'phys': loss_phys
+            'phys': loss_phys,
+            'diff': loss_diff
         }
         return losses
 
