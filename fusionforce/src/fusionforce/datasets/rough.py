@@ -20,8 +20,8 @@ import open3d as o3d
 
 
 pkg_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
-# data_dir = '/mnt/data/vras/data/fusionforce' # for rci cluster
-data_dir = os.path.realpath(os.path.join(pkg_dir, 'data'))
+data_dir = '/mnt/data/vras/data/fusionforce' # for rci cluster
+# data_dir = os.path.realpath(os.path.join(pkg_dir, 'data'))
 
 rough_seq_paths = [
         os.path.join(data_dir, 'ROUGH/24-08-14-monoforce-long_drive'),
@@ -93,7 +93,6 @@ class ROUGH(Dataset):
     def get_ids(self):
         ids = [f[:-4] for f in os.listdir(self.cloud_path)]
         ids = sorted(ids)
-        ids.remove('1727351210_69369')
         return ids
 
     @staticmethod
