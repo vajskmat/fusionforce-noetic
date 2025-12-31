@@ -1,3 +1,14 @@
+## Acknowledgement
+
+This project is based on the FusionForce framework originally developed by the
+CTU-VRAS team:
+https://github.com/ctu-vras/fusionforce
+
+The original project is licensed under the BSD-3-Clause license.
+
+Parts of the codebase were modified, extended, and newly implemented by the author
+for research purposes and academic work.
+
 # FusionForce: End-to-end Differentiable Neural-Symbolic Layer for Trajectory Prediction
 
 [![Arxiv](http://img.shields.io/badge/paper-arxiv-critical.svg?style=plastic)](https://arxiv.org/abs/2502.10156)
