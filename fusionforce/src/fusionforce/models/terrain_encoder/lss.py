@@ -136,6 +136,22 @@ class BevEncode(nn.Module):
             nn.Conv2d(128, out_channels, kernel_size=1, padding=0),
             nn.ReLU()
         )
+        self.up_damping = nn.Sequential(
+            nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True),
+            nn.Conv2d(256, 128, kernel_size=3, padding=1, bias=False),
+            nn.BatchNorm2d(128),
+            nn.GELU(),
+            nn.Conv2d(128, out_channels, kernel_size=1, padding=0),
+            nn.ReLU()
+        )
+        self.up_stiffness = nn.Sequential(
+            nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True),
+            nn.Conv2d(256, 128, kernel_size=3, padding=1, bias=False),
+            nn.BatchNorm2d(128),
+            nn.GELU(),
+            nn.Conv2d(128, out_channels, kernel_size=1, padding=0),
+            nn.ReLU()
+        )
 
     def backbone(self, x):
         x = self.conv1(x)
@@ -154,12 +170,16 @@ class BevEncode(nn.Module):
         x_geom = self.up_geom(x)
         x_diff = self.up_diff(x)
         x_friction = self.up_friction(x)
+        x_damping = self.up_damping(x)
+        x_stiffness = self.up_stiffness(x)
         x_terrain = x_geom - x_diff
         out = {
             'geom': x_geom,
             'terrain': x_terrain,
             'diff': x_diff,
-            'friction': x_friction
+            'friction': x_friction,
+            'damping': x_damping,
+            'stiffness': x_stiffness
         }
         return out
 
