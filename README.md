@@ -138,7 +138,7 @@ as the Physics Engine does.
 
 The FusionForce prediction example: supporting terrain elavation projected to the robot's camera frames.
 
-## Citation
+## Citation of original paper which this work is build on
 
 Consider citing the paper if you find the work relevant to your research:
 
