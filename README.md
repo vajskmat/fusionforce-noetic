@@ -1,7 +1,15 @@
-# FusionForce: End-to-end Differentiable Neural-Symbolic Layer for Trajectory Prediction
+## Acknowledgement
 
-[![Arxiv](http://img.shields.io/badge/paper-arxiv-critical.svg?style=plastic)](https://arxiv.org/abs/2502.10156)
-[![Data](http://img.shields.io/badge/data-ROUGH-blue.svg?style=plastic)](https://drive.google.com/drive/folders/1nli-4YExqcBhl0mPNRUjSiNecX4yIcme?usp=sharing)
+This project is based on the FusionForce framework originally developed by the
+CTU-VRAS team:
+https://github.com/ctu-vras/fusionforce
+
+The original project is licensed under the BSD-3-Clause license.
+
+Parts of the codebase were modified, extended, and newly implemented by the author
+for research purposes and academic work.
+
+# Sensor Fusion for Estimation of the Physical Terrain Properties
 
 ## Abstract
 
@@ -130,7 +138,7 @@ as the Physics Engine does.
 
 The FusionForce prediction example: supporting terrain elavation projected to the robot's camera frames.
 
-## Citation
+## Citation of original paper which this work is build on
 
 Consider citing the paper if you find the work relevant to your research:
 
