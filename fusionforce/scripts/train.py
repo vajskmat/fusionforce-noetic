@@ -152,7 +152,7 @@ class TrainerCore:
             loss = (self.geom_weight * losses['geom'] +
                     self.terrain_weight * losses['terrain'] +
                     self.phys_weight * losses['phys'] +
-                    0.5 * losses['diff'])
+                    1.0 * losses['diff'])
 
             if torch.isnan(loss):
                 torch.save(self.terrain_encoder.state_dict(), os.path.join(self.log_dir, 'train.pth'))
