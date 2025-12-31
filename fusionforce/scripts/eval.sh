@@ -6,13 +6,13 @@ SEQ=val
 BATCH_SIZE=1
 TERRAIN_ENCODERS=(lss voxelnet pointpillars bevfusion bevfusion2)
 TRAJ_PREDICTORS=(dphysics)
-VIS=True
+VIS=False
 
 for TERRAIN_ENCODER in "${TERRAIN_ENCODERS[@]}"
 do
   for TRAJ_PREDICTOR in "${TRAJ_PREDICTORS[@]}"
   do
-    WEIGHTS=$HOME/workspaces/ros1/traversability_ws/src/fusionforce/fusionforce/config/weights/${TERRAIN_ENCODER}/val.pth
+    WEIGHTS=/home/robot/Desktop/rci_results/results_withtout_physics/weights/${TERRAIN_ENCODER}/val.pth
     echo "Evaluating terrain encoder ${TERRAIN_ENCODER} with trajectory predictor ${TRAJ_PREDICTOR}..."
     ./eval.py --terrain_encoder ${TERRAIN_ENCODER} \
               --terrain_encoder_path ${WEIGHTS} \

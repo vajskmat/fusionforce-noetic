@@ -151,7 +151,7 @@ class Eval:
         y_grid = torch.arange(-self.dphys_cfg.d_max, self.dphys_cfg.d_max, self.dphys_cfg.grid_res)
         x_grid, y_grid = torch.meshgrid(x_grid, y_grid)
 
-        fig, axes = plt.subplots(3, 4, figsize=(20, 16))
+        fig, axes = plt.subplots(4, 4, figsize=(20, 20))
         for i, batch in enumerate(tqdm(self.loader)):
             batch = [t.to(self.device) for t in batch]
             # get a sample from the dataset
@@ -186,6 +186,9 @@ class Eval:
             H_diff_pred = H_diff_pred[0, 0].cpu()
             H_t_pred = H_t_pred[0, 0].cpu()
             Friction_pred = Friction_pred[0, 0].cpu()
+
+            H_g_gt = hm_geom[:, 0].cpu()
+            H_t_gt = hm_terrain[:, 0].cpu()
             # get height map points
             hm_points = torch.stack([x_grid, y_grid, H_t_pred], dim=-1)
             hm_points = hm_points.view(-1, 3).T
@@ -242,47 +245,58 @@ class Eval:
             axes[1, 3].imshow(Friction_pred.T, origin='lower', cmap='jet', vmin=0., vmax=1.)
             axes[1, 3].axis('off')
 
+             # plot geom heightmap
+            axes[2, 0].set_title('Geom Height GT')
+            axes[2, 0].imshow(H_g_gt.T, origin='lower', cmap='jet', vmin=-1., vmax=1.)
+            axes[2, 0].axis('off')
+
+            # plot terrain heightmap
+            axes[2, 1].set_title('Terrain Height GT')
+            axes[2, 1].imshow(H_t_gt.T, origin='lower', cmap='jet', vmin=-1., vmax=1.)
+            axes[2, 1].axis('off')
+
+
             # plot control inputs
-            axes[2, 0].plot(control_ts[0], controls[0, :, 0], c='g', label='v(t)')
-            axes[2, 0].plot(control_ts[0], controls[0, :, 1], c='b', label='w(t)')
-            axes[2, 0].grid()
-            axes[2, 0].set_xlabel('Time [s]')
-            axes[2, 0].set_ylabel('Control [m/s]')
-            axes[2, 0].legend()
+            axes[3, 0].plot(control_ts[0], controls[0, :, 0], c='g', label='v(t)')
+            axes[3, 0].plot(control_ts[0], controls[0, :, 1], c='b', label='w(t)')
+            axes[3, 0].grid()
+            axes[3, 0].set_xlabel('Time [s]')
+            axes[3, 0].set_ylabel('Control [m/s]')
+            axes[3, 0].legend()
 
             # plot trajectories: Roll, Pitch, Yaw
             rpy = Rotation.from_matrix(states_pred[2][0].cpu()).as_euler('xyz')
             rpy_gt = Rotation.from_matrix(states_gt[2][0].cpu()).as_euler('xyz')
-            axes[2, 1].plot(control_ts[0], rpy[:, 0], 'r', label='Pred Roll')
-            axes[2, 1].plot(control_ts[0], rpy[:, 1], 'g', label='Pred Pitch')
-            axes[2, 1].plot(control_ts[0], rpy[:, 2], 'b', label='Pred Yaw')
-            axes[2, 1].plot(traj_ts[0], rpy_gt[:, 0], 'r--', label='Roll')
-            axes[2, 1].plot(traj_ts[0], rpy_gt[:, 1], 'g--', label='Pitch')
-            axes[2, 1].plot(traj_ts[0], rpy_gt[:, 2], 'b--', label='Yaw')
-            axes[2, 1].grid()
-            axes[2, 1].set_xlabel('Time [s]')
-            axes[2, 1].set_ylabel('Angle [rad]')
-            axes[2, 1].set_ylim(-np.pi / 2., np.pi / 2.)
+            axes[3, 1].plot(control_ts[0], rpy[:, 0], 'r', label='Pred Roll')
+            axes[3, 1].plot(control_ts[0], rpy[:, 1], 'g', label='Pred Pitch')
+            axes[3, 1].plot(control_ts[0], rpy[:, 2], 'b', label='Pred Yaw')
+            axes[3, 1].plot(traj_ts[0], rpy_gt[:, 0], 'r--', label='Roll')
+            axes[3, 1].plot(traj_ts[0], rpy_gt[:, 1], 'g--', label='Pitch')
+            axes[3, 1].plot(traj_ts[0], rpy_gt[:, 2], 'b--', label='Yaw')
+            axes[3, 1].grid()
+            axes[3, 1].set_xlabel('Time [s]')
+            axes[3, 1].set_ylabel('Angle [rad]')
+            axes[3, 1].set_ylim(-np.pi / 2., np.pi / 2.)
             # axes[2, 1].legend()
 
             # plot trajectories: XY
-            axes[2, 2].plot(states_pred[0][0, :, 0].cpu(), states_pred[0][0, :, 1].cpu(), 'r', label='Pred Traj')
-            axes[2, 2].plot(states_gt[0][0, :, 0], states_gt[0][0, :, 1], 'k', label='GT Traj')
-            axes[2, 2].set_xlim(-self.dphys_cfg.d_max, self.dphys_cfg.d_max)
-            axes[2, 2].set_ylim(-self.dphys_cfg.d_max, self.dphys_cfg.d_max)
-            axes[2, 2].grid()
-            axes[2, 2].set_xlabel('x [m]')
-            axes[2, 2].set_ylabel('y [m]')
-            axes[2, 2].legend()
+            axes[3, 2].plot(states_pred[0][0, :, 0].cpu(), states_pred[0][0, :, 1].cpu(), 'r', label='Pred Traj')
+            axes[3, 2].plot(states_gt[0][0, :, 0], states_gt[0][0, :, 1], 'k', label='GT Traj')
+            axes[3, 2].set_xlim(-self.dphys_cfg.d_max, self.dphys_cfg.d_max)
+            axes[3, 2].set_ylim(-self.dphys_cfg.d_max, self.dphys_cfg.d_max)
+            axes[3, 2].grid()
+            axes[3, 2].set_xlabel('x [m]')
+            axes[3, 2].set_ylabel('y [m]')
+            axes[3, 2].legend()
 
             # plot trajectories: Z
-            axes[2, 3].plot(control_ts[0], states_pred[0][0, :, 2].cpu(), 'r', label='Pred Traj')
-            axes[2, 3].plot(traj_ts[0], states_gt[0][0, :, 2], 'k', label='GT Traj')
-            axes[2, 3].grid()
-            axes[2, 3].set_xlabel('Time [s]')
-            axes[2, 3].set_ylabel('z [m]')
-            axes[2, 3].set_ylim(-self.dphys_cfg.h_max, self.dphys_cfg.h_max)
-            axes[2, 3].legend()
+            axes[3, 3].plot(control_ts[0], states_pred[0][0, :, 2].cpu(), 'r', label='Pred Traj')
+            axes[3, 3].plot(traj_ts[0], states_gt[0][0, :, 2], 'k', label='GT Traj')
+            axes[3, 3].grid()
+            axes[3, 3].set_xlabel('Time [s]')
+            axes[3, 3].set_ylabel('z [m]')
+            axes[3, 3].set_ylim(-self.dphys_cfg.h_max, self.dphys_cfg.h_max)
+            axes[3, 3].legend()
 
             if vis:
                 plt.pause(0.01)
