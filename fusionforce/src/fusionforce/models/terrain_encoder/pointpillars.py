@@ -243,9 +243,6 @@ class PillarNet(nn.Module):
                                             out_channel=n_features)
                                         
     def forward(self, points, mode='train'): # points: (bs, C, N)
-        # Different ways to handle NaNs in point clouds
-        # points[torch.isnan(points)] = 0
-        # points[torch.isnan(points)] = 1e6
         # Filter out points with NaNs
         # and create a list of tensors for each batch points: (bs, N, 3 + c) -> batched_pts: list[tensor]
         # Vectorized valid mask: shape [B, N]
@@ -255,7 +252,6 @@ class PillarNet(nn.Module):
         for b in range(points.size(0)):
             p = points[b, :, valid_mask[b]]  # [C, N_valid]
             batched_pts.append(p.transpose(0, 1))  # [N_valid, C]
-        # batched_pts = [points[b].permute(1, 0) for b in range(points.size(0))]
 
         # batched_pts: list[tensor] -> pillars: (p1 + p2 + ... + pb, num_points, c), 
         #                              coors_batch: (p1 + p2 + ... + pb, 3 + 1), 

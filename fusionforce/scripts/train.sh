@@ -1,11 +1,11 @@
 #!/bin/bash
 
-MODEL=bevfusion  # lss, voxelnet, pointpillars, bevfusion, bevfusion2
+MODEL=voxelnet  # lss, voxelnet, pointpillars, bevfusion (lss + voxelnet), bevfusion2 (lss + pointpillars)
 ROBOT=marv
 DEBUG=False
 VIS=False
-BSZ=12  # 24, 24, 12
-WEIGHTS=$HOME/workspaces/ros1/traversability_ws/src/fusionforce/fusionforce/config/weights/${MODEL}/val.pth
+BSZ=24  # 24, 24, 12
+WEIGHTS=$HOME/home/fusionforce/fusionforce/config/weights/val.pth # path to pretrained weights
 
 ./train.py --bsz $BSZ --nepochs 1000 --lr 1e-4 \
            --debug $DEBUG --vis $VIS \
@@ -13,4 +13,4 @@ WEIGHTS=$HOME/workspaces/ros1/traversability_ws/src/fusionforce/fusionforce/conf
            --traj_sim_time 5.0 \
            --robot $ROBOT \
            --model $MODEL \
-           #--pretrained_model_path ${WEIGHTS}
+           --pretrained_model_path ${WEIGHTS}
