@@ -1,3 +1,10 @@
+"""
+This project uses and adapts components from the PointPillars implementation:
+https://github.com/zhulf0804/PointPillars
+
+Licensed under the MIT License.
+"""
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
