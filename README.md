@@ -13,16 +13,9 @@ for research purposes and academic work.
 
 ## Abstract
 
-We propose end-to-end differentiable model that predicts robot trajectories on rough offroad terrain from camera images
-and/or lidar point clouds. The model integrates a learnable component that predicts robot-terrain interaction forces with a
-neural-symbolic layer that enforces the laws of classical mechanics and consequently improves generalization on out-of-
-distribution data. The neural-symbolic layer includes a differentiable physics engine that computes the robot’s trajectory
-by querying these forces at the points of contact with the terrain. As the proposed architecture comprises substantial
-geometrical and physics priors, the resulting model can also be seen as a learnable physics engine conditioned on
-real sensor data that delivers $10^4$ trajectories per second. We argue and empirically demonstrate that this architecture
-reduces the sim-to-real gap and mitigates out-of-distribution sensitivity. The differentiability, in conjunction with the rapid
-simulation speed, makes the model well-suited for various applications including model predictive control, trajectory
-shooting, supervised and reinforcement learning, or SLAM.
+This thesis addresses the estimation of physical terrain properties for off-road mobile robot navigation using multi-modal perception and physics-informed learning. A Bird’s-Eye View (BEV) fusion architecture is proposed to combine RGB images and LiDAR point clouds, enabling the prediction of terrain geometry and physical interaction properties (friction, stiffness, and damping) that are critical for modeling robot motion.
+The predicted terrain properties are evaluated using a differentiable physics engine that simulates robot–terrain interaction. This framework enables self-supervised learning by utilizing trajectory-level errors as a training signal, bypassing the need for direct ground truth of physical terrain properties, which is often unavailable in real-world off-road environments.
+Experimental results demonstrate that physics-based supervision significantly improves trajectory prediction accuracy and physical consistency compared to perception-only training. Furthermore, multi-modal fusion increases robustness in challenging environments characterized by sparse visual cues or dense vegetation. Overall, the results show that combining multi-modal perception with physics-informed learning is an effective strategy for achieving terrain-aware off-road navigation.
 
 ## Pipeline
 
