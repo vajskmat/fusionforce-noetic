@@ -34,16 +34,10 @@ geometrical heightmap and lidar-estimated heightmap;
 - terrain loss, $L_{t}$, which enforces rigid terrain on rigid semantic classes
 revealed through image foundation model [SEEM](https://github.com/UX-Decoder/Segment-Everything-Everywhere-All-At-Once).
 
-### Terrain Encoder with unified BEV fusion
+### Terrain Encoders with unified BEV fusion
 
-<img src="./fusionforce/docs/imgs/terrain_encoder.jpg" alt="Terrain Encoder" width="1000"/>
-
-- The depth distribution for each frustum ray is created by "lifting" into 3D the calibrated camera features, [LSS](https://github.com/nv-tlabs/lift-splat-shoot).
-- The depth distribution is then projected onto the ground plane to create a 2D image BEV features.
-- The voxelized featured are computed from a 3D point cloud, [VoxelNet](https://arxiv.org/abs/1711.06396).
-- The voxelized features are projected onto the ground plane to create a 2D lidar BEV features.
-- The camera and lidar BEV maps are fused into a single BEV features using an encoder-decoder architecture.
-- The fused BEV features is then used to predict the terrain properties, such as elevation and friction.
+<img src="./fusionforce/docs/imgs/terrain_encoder1.png" alt="Terrain Encoder" width="1000"/>
+<img src="./fusionforce/docs/imgs/terrain_encoder2.png" alt="Terrain Encoder" width="1000"/>
 
 ## Installation
 The package is organized as a
