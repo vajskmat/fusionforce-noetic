@@ -6,7 +6,7 @@ https://github.com/ctu-vras/fusionforce
 
 The original project is licensed under the BSD-3-Clause license.
 
-Parts of the codebase were modified, extended, and newly implemented by the author
+Parts of the codebase and description were modified, extended, and newly implemented by the author
 for research purposes and academic work.
 
 # Sensor Fusion for Estimation of the Physical Terrain Properties
