@@ -45,22 +45,6 @@ revealed through image foundation model [SEEM](https://github.com/UX-Decoder/Seg
 - The camera and lidar BEV maps are fused into a single BEV features using an encoder-decoder architecture.
 - The fused BEV features is then used to predict the terrain properties, such as elevation and friction.
 
-### Differentiable Physics Engine
-
-<img src="./fusionforce/docs/imgs/dphysics.jpg" alt="Differentiable Physics Engine" width="1000"/>
-
-The differentiability of the developed physics engine allows for the
-end-to-end training of the model.
-For example, it allows to learn the terrain properties from the robot's trajectories.
-
-## Autonomous Navigation
-
-<img src="./fusionforce/docs/imgs/navigation.png" alt="Autonomous Navigation" width="1000"/>
-
-- The **GPU parallelization** of the physics engine allows the module to be used for real-time trajectory shooting.
-- The **cost of the trajectories** is computed from the predicted robot-terrain interaction forces.
-- The path to follow is selected based on the **cost of the trajectories and the distance to a waypoint**.
-
 ## Installation
 The package is organized as a
 [ROS 1](https://docs.ros.org/) package and can be installed using the following the
@@ -129,7 +113,7 @@ as the Physics Engine does.
 
 <img src="./fusionforce/docs/imgs/prediction.png" alt="FusionForce Node" width="1000"/>
 
-The FusionForce prediction example: supporting terrain elavation projected to the robot's camera frames.
+Top row shows synchronized RGB images from the front, right, rear, and left cameras. Bottom row shows the corresponding BEV-aligned predicted terrain maps (geometrical $\mathcal{H}_g$, terrain $\mathcal{H}_t$, and friction $\mathcal{F}$), illustrating inferred supporting terrain structure beneath vegetation and rigid ground regions. The robot trajectory (predicted yellow, ground-truh red) and field of view are overlaid for reference.
 
 ## Citation of original paper which this work is build on
 
